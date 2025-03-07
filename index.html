@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connections-plus</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Connections-plus</h1>
+            <p>An improved UI for playing the NYT Connections Game</p>
+        </header>
+        
+        <main>
+            <div id="game-board" class="game-board">
+                <!-- Cards will be dynamically inserted here -->
+            </div>
+            
+            <div class="toolbar">
+                <div class="color-tools">
+                    <button class="color-tool" data-color="yellow"></button>
+                    <button class="color-tool" data-color="green"></button>
+                    <button class="color-tool" data-color="blue"></button>
+                    <button class="color-tool" data-color="purple"></button>
+                </div>
+                
+                <div class="drawing-tools">
+                    <button id="pen-tool" class="drawing-tool">Pen</button>
+                    <button id="eraser-tool" class="drawing-tool">Eraser</button>
+                    <button id="clear-drawing" class="drawing-tool">Clear Drawing</button>
+                </div>
+                
+                <div class="game-controls">
+                    <button id="reset-board" class="control">Reset Board</button>
+                    <button id="submit-guess" class="control primary">Submit Guess</button>
+                </div>
+            </div>
+            
+            <div class="game-selection">
+                <button id="daily-game">Today's Game</button>
+                <button id="random-game">Random Game</button>
+                <button id="browse-games">Browse Archive</button>
+            </div>
+        </main>
+        
+        <canvas id="drawing-layer" class="drawing-layer"></canvas>
+    </div>
+    
+    <script src="src/main.js" type="module"></script>
+</body>
+</html> 

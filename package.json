@@ -1,0 +1,28 @@
+{
+  "name": "connections-plus",
+  "version": "1.0.0",
+  "description": "An improved UI for playing the NYT Connections Game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "connections",
+    "game",
+    "nyt",
+    "puzzle"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "http": "0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 

@@ -1,0 +1,214 @@
+/* Main Styles for Connections-plus */
+
+:root {
+    /* Color palette */
+    --yellow-category: #f9da6a;
+    --green-category: #a0c35a;
+    --blue-category: #6faddb;
+    --purple-category: #ba82dc;
+    
+    --background-color: #f8f9fa;
+    --card-color: #ffffff;
+    --text-color: #333333;
+    --border-color: #dddddd;
+    
+    /* Spacing */
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    
+    /* Card dimensions */
+    --card-width: 150px;
+    --card-height: 80px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+#app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    position: relative;
+}
+
+header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Game Board */
+.game-board {
+    min-height: 600px;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Card Styles */
+.card {
+    width: var(--card-width);
+    height: var(--card-height);
+    background-color: var(--card-color);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    position: absolute;
+    cursor: move;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.card.yellow {
+    background-color: var(--yellow-category);
+    border-color: var(--yellow-category);
+}
+
+.card.green {
+    background-color: var(--green-category);
+    border-color: var(--green-category);
+}
+
+.card.blue {
+    background-color: var(--blue-category);
+    border-color: var(--blue-category);
+}
+
+.card.purple {
+    background-color: var(--purple-category);
+    border-color: var(--purple-category);
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background-color: var(--card-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.color-tools {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.color-tool {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+}
+
+.color-tool[data-color="yellow"] {
+    background-color: var(--yellow-category);
+}
+
+.color-tool[data-color="green"] {
+    background-color: var(--green-category);
+}
+
+.color-tool[data-color="blue"] {
+    background-color: var(--blue-category);
+}
+
+.color-tool[data-color="purple"] {
+    background-color: var(--purple-category);
+}
+
+.drawing-tools, .game-controls {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--card-color);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #f0f0f0;
+}
+
+button.primary {
+    background-color: var(--blue-category);
+    color: white;
+    border-color: var(--blue-category);
+}
+
+button.primary:hover {
+    background-color: #5a9cd6;
+}
+
+/* Game Selection */
+.game-selection {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+/* Drawing Layer */
+.drawing-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .toolbar {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .game-selection {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .card {
+        --card-width: 120px;
+        --card-height: 70px;
+        font-size: 14px;
+    }
+} 
