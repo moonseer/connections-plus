@@ -8,19 +8,29 @@ Did you ever wish you could move around and temporarily label cards in the game?
 ### Current Features
 - **Flexible Card Placement**: Move cards anywhere on the screen to visually organize your thoughts
 - **Color Coding**: Make guesses about card categories by color-coding them without submitting
-- **Drawing Tools**: Add notes and annotations directly on the screen
-- **Game Submission**: Submit your final answers when ready. And select the order.
+  - Visual indicators show group progress with card counts
+  - Pulsing animation highlights the active color tool
+  - Visual feedback when a color group is complete (4 cards)
+- **Drawing Tools**: Add notes and annotations directly on the screen with toggle functionality
+- **Game Submission**: Submit your final answers when ready and select the order
 - **Game Library**: Pick from a collection of historic games to play
+  - Search functionality to filter games by date or ID
+  - Browse through a comprehensive archive of past games
+  - Loading states and error handling for smooth user experience
 - **Real Game Data**: Connected to a GitHub repository with actual NYT Connections game data
+- **AI Hints**: Get hints of varying difficulty when you're stuck:
+  - Beginner: General guidance about possible connections
+  - Intermediate: Specific clues about one category
+  - Expert: Minimal nudges to preserve the challenge
+- **Mobile Responsive**: Optimized layout for mobile devices
+- **Visual Feedback**: Status messages, animations, and tooltips enhance the user experience
 
 ### Upcoming Features
-- **AI Assistance**: Get hints of varying difficulty when you're stuck
-  - Beginner hints: General guidance about possible connections
-  - Intermediate hints: Specific clues about one category
-  - Expert hints: Minimal nudges to preserve the challenge
 - **Save Progress**: Save your game state to continue later
 - **Custom Games**: Create and share your own Connections puzzles
 - **Statistics**: Track your performance over time
+- **Enhanced Animations**: Improved UI with additional animations and transitions
+- **User Accounts**: Personal profiles with progress tracking
 
 ## How to Play
 
@@ -28,7 +38,8 @@ Did you ever wish you could move around and temporarily label cards in the game?
 2. **Organize Cards**: Drag cards to group them as you explore possible connections
 3. **Test Categories**: Use the color-coding feature to mark potential groups
 4. **Take Notes**: Use the drawing tools to jot down ideas
-5. **Submit**: When confident, submit your answer to see if you're correct
+5. **Get Hints**: If you're stuck, use the AI hints feature for guidance
+6. **Submit**: When confident, submit your answer to see if you're correct
 
 ## How to Run
 
@@ -54,6 +65,8 @@ The application is built with:
 - Fetch API for loading game data from GitHub
 - Event delegation for efficient event handling
 - Node.js server for serving the application
+- Global state management for consistent application state
+- Responsive design for mobile and desktop compatibility
 
 ## Data Source
 

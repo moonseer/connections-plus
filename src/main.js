@@ -8,6 +8,7 @@ import { setupDrawingTools } from './components/DrawingTools.js';
 import { setupGameControls } from './components/GameControls.js';
 import { loadGame, getRandomGame } from './data/GameData.js';
 import { setupGameBrowser } from './components/GameBrowser.js';
+import { setupAIHints } from './components/AIHints.js';
 
 // DOM Elements
 const gameBoard = document.getElementById('game-board');
@@ -22,7 +23,8 @@ const state = {
     selectedCards: [],
     currentColor: null,
     drawingMode: false,
-    eraserMode: false
+    eraserMode: false,
+    hintHistory: [] // Track hints that have been given
 };
 
 // Make state globally available for components
@@ -41,12 +43,29 @@ function initApp() {
     setupColorCoding(state);
     setupDrawingTools(drawingLayer, state);
     setupGameControls(state);
+    setupAIHints(state, onHintRequested);
     
     // Load a random game to start
     loadRandomGame();
     
     // Log initial state
     console.log('Initial state:', { ...state });
+}
+
+/**
+ * Handle hint requested event
+ * @param {string} level - The hint level
+ * @param {string} hint - The generated hint
+ */
+function onHintRequested(level, hint) {
+    // Add the hint to the history
+    state.hintHistory.push({
+        level,
+        hint,
+        timestamp: new Date().toISOString()
+    });
+    
+    console.log(`Hint requested (${level}):`, hint);
 }
 
 // Load the daily game
@@ -98,6 +117,7 @@ function renderGame(game) {
     state.currentColor = null;
     state.drawingMode = false;
     state.eraserMode = false;
+    state.hintHistory = []; // Reset hint history for new game
     
     // Create cards
     const cards = createCards(game.words);
