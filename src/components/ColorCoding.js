@@ -34,7 +34,7 @@ function setupColorCoding(state) {
     document.addEventListener('click', (e) => {
         // Check if a card was clicked and not in drawing mode
         if (e.target.classList.contains('card') && !state.drawingMode) {
-            // If a color is selected, apply it to the clicked card
+            // If a color is selected, apply or remove it from the clicked card
             if (state.currentColor) {
                 // First deselect any previously selected cards
                 clearSelectedCards(state);
@@ -42,9 +42,16 @@ function setupColorCoding(state) {
                 // Select this card
                 toggleCardSelection(e.target, state);
                 
-                // Apply the color to the clicked card
-                setCardColor(e.target, state.currentColor);
-                console.log(`Applied color ${state.currentColor} to card: ${e.target.textContent}`);
+                // Check if the card already has the selected color
+                if (e.target.classList.contains(state.currentColor)) {
+                    // Remove the color (toggle off)
+                    e.target.classList.remove(state.currentColor);
+                    console.log(`Removed color ${state.currentColor} from card: ${e.target.textContent}`);
+                } else {
+                    // Apply the color to the clicked card (toggle on)
+                    setCardColor(e.target, state.currentColor);
+                    console.log(`Applied color ${state.currentColor} to card: ${e.target.textContent}`);
+                }
                 
                 // Update color tool indicators with counts
                 updateColorToolCounts();
