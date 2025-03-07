@@ -1,4 +1,5 @@
 // Card Component
+import { toggleCardSelection as toggleSelection } from './ColorCoding.js';
 
 /**
  * Create a card element with the given text
@@ -33,33 +34,14 @@ function createCards(words) {
 function handleCardClick(event) {
     const card = event.currentTarget;
     
-    // Toggle selection if not in drawing mode
-    if (!window.appState?.drawingMode) {
-        toggleCardSelection(card);
-    }
-}
-
-/**
- * Toggle the selection state of a card
- * @param {HTMLElement} card - The card element
- */
-function toggleCardSelection(card) {
-    card.classList.toggle('selected');
+    // Get the app state from the main module
+    const appState = window.appState || {};
     
-    // Update the global selected cards array
-    if (window.appState) {
-        const selectedCards = window.appState.selectedCards || [];
-        
-        if (card.classList.contains('selected')) {
-            selectedCards.push(card);
-        } else {
-            const index = selectedCards.indexOf(card);
-            if (index !== -1) {
-                selectedCards.splice(index, 1);
-            }
-        }
-        
-        window.appState.selectedCards = selectedCards;
+    // Toggle selection if not in drawing mode
+    if (!appState.drawingMode) {
+        // We'll let the ColorCoding module handle this now
+        // The global click handler in ColorCoding will take care of it
+        console.log(`Card clicked: ${card.textContent}`);
     }
 }
 
@@ -75,6 +57,7 @@ function setCardColor(card, color) {
     // Add the new color class if a valid color is provided
     if (['yellow', 'green', 'blue', 'purple'].includes(color)) {
         card.classList.add(color);
+        console.log(`Set card color to ${color}: ${card.textContent}`);
     }
 }
 
@@ -94,6 +77,7 @@ function resetCardColors() {
     document.querySelectorAll('.card').forEach(card => {
         card.classList.remove('yellow', 'green', 'blue', 'purple');
     });
+    console.log('Reset all card colors');
 }
 
 export { createCard, createCards, setCardColor, getCardsByColor, resetCardColors }; 

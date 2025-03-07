@@ -3,8 +3,10 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const net = require('net');
 
-const PORT = process.env.PORT || 3000;
+// Start with port 8080, but will find an available port if this one is in use
+let PORT = process.env.PORT || 8080;
 
 // MIME types for different file extensions
 const MIME_TYPES = {
@@ -64,7 +66,48 @@ const server = http.createServer((req, res) => {
     });
 });
 
-// Start the server
-server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/`);
-}); 
+// Function to check if a port is available
+function isPortAvailable(port) {
+    return new Promise((resolve) => {
+        const testServer = net.createServer()
+            .once('error', () => {
+                resolve(false);
+            })
+            .once('listening', () => {
+                testServer.close();
+                resolve(true);
+            })
+            .listen(port);
+    });
+}
+
+// Function to find an available port
+async function findAvailablePort(startPort) {
+    let port = startPort;
+    const maxPort = startPort + 100; // Don't check more than 100 ports
+    
+    while (port < maxPort) {
+        if (await isPortAvailable(port)) {
+            return port;
+        }
+        console.log(`Port ${port} is in use, trying ${port + 1}...`);
+        port++;
+    }
+    
+    throw new Error(`Could not find an available port after checking ${maxPort - startPort} ports`);
+}
+
+// Start the server on an available port
+async function startServer() {
+    try {
+        PORT = await findAvailablePort(PORT);
+        server.listen(PORT, () => {
+            console.log(`Server running at http://localhost:${PORT}/`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error.message);
+        process.exit(1);
+    }
+}
+
+startServer(); 

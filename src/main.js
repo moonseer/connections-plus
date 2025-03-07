@@ -7,6 +7,7 @@ import { setupColorCoding } from './components/ColorCoding.js';
 import { setupDrawingTools } from './components/DrawingTools.js';
 import { setupGameControls } from './components/GameControls.js';
 import { loadGame, getRandomGame } from './data/GameData.js';
+import { setupGameBrowser } from './components/GameBrowser.js';
 
 // DOM Elements
 const gameBoard = document.getElementById('game-board');
@@ -21,10 +22,16 @@ const state = {
     selectedCards: [],
     currentColor: null,
     drawingMode: false,
+    eraserMode: false
 };
+
+// Make state globally available for components
+window.appState = state;
 
 // Initialize the app
 function initApp() {
+    console.log('Initializing Connections-plus app');
+    
     // Set up event listeners for game selection
     dailyGameBtn.addEventListener('click', loadDailyGame);
     randomGameBtn.addEventListener('click', loadRandomGame);
@@ -37,11 +44,15 @@ function initApp() {
     
     // Load a random game to start
     loadRandomGame();
+    
+    // Log initial state
+    console.log('Initial state:', { ...state });
 }
 
 // Load the daily game
 async function loadDailyGame() {
     try {
+        console.log('Loading daily game...');
         const game = await loadGame('daily');
         renderGame(game);
     } catch (error) {
@@ -53,6 +64,7 @@ async function loadDailyGame() {
 // Load a random game
 async function loadRandomGame() {
     try {
+        console.log('Loading random game...');
         const game = await getRandomGame();
         renderGame(game);
     } catch (error) {
@@ -63,18 +75,29 @@ async function loadRandomGame() {
 
 // Show the game browser modal
 function showGameBrowser() {
-    // To be implemented
-    alert('Game browser coming soon!');
+    console.log('Opening game browser...');
+    setupGameBrowser(renderGame);
 }
 
 // Render the game on the board
 function renderGame(game) {
+    console.log('Rendering game:', game);
+    
     // Clear the board
     gameBoard.innerHTML = '';
+    
+    // Re-add the canvas since we cleared the board
+    const canvas = document.createElement('canvas');
+    canvas.id = 'drawing-layer';
+    canvas.className = 'drawing-layer';
+    gameBoard.appendChild(canvas);
     
     // Update state
     state.currentGame = game;
     state.selectedCards = [];
+    state.currentColor = null;
+    state.drawingMode = false;
+    state.eraserMode = false;
     
     // Create cards
     const cards = createCards(game.words);
@@ -89,6 +112,46 @@ function renderGame(game) {
     
     // Arrange cards in a grid
     arrangeCardsInGrid();
+    
+    // Re-initialize components with the new canvas
+    setupDrawingTools(canvas, state);
+    
+    // Reset color tools
+    resetColorTools();
+    
+    // Update the page title with the game date
+    if (game.date) {
+        document.title = `Connections-plus - ${formatDate(game.date)}`;
+    }
+}
+
+/**
+ * Format a date string
+ * @param {string} dateString - The date string in YYYY-MM-DD format
+ * @returns {string} - The formatted date string
+ */
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+
+/**
+ * Reset color tools to their initial state
+ */
+function resetColorTools() {
+    // Remove active class from all color tools
+    document.querySelectorAll('.color-tool').forEach(tool => {
+        tool.classList.remove('active');
+        tool.classList.remove('complete');
+        tool.removeAttribute('data-count');
+        tool.title = '';
+    });
+    
+    console.log('Reset color tools');
 }
 
 // Arrange cards in a grid layout
@@ -106,12 +169,15 @@ function arrangeCardsInGrid() {
         card.style.left = `${col * (cardWidth + spacing) + spacing}px`;
         card.style.top = `${row * (cardHeight + spacing) + spacing}px`;
     });
+    
+    console.log(`Arranged ${cards.length} cards in a ${gridSize}x${gridSize} grid`);
 }
 
 // Show error message
 function showError(message) {
     // Simple error display for now
     alert(message);
+    console.error('Error:', message);
 }
 
 // Initialize the app when DOM is loaded

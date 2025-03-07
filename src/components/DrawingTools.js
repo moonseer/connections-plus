@@ -24,17 +24,41 @@ function setupDrawingTools(canvas, state) {
     
     // Set up event listeners for drawing tools
     penTool.addEventListener('click', () => {
-        state.drawingMode = true;
+        // Toggle drawing mode
+        state.drawingMode = !state.drawingMode;
         state.eraserMode = false;
-        updateActiveDrawingTool('pen');
-        canvas.style.pointerEvents = 'auto';
+        
+        if (state.drawingMode) {
+            updateActiveDrawingTool('pen');
+            canvas.style.pointerEvents = 'auto';
+            console.log('Pen tool activated, drawing mode:', state.drawingMode);
+        } else {
+            updateActiveDrawingTool(null);
+            canvas.style.pointerEvents = 'none';
+            console.log('Pen tool deactivated, drawing mode:', state.drawingMode);
+        }
+        
+        // Make sure the canvas is visible and positioned correctly
+        ensureCanvasIsReady();
     });
     
     eraserTool.addEventListener('click', () => {
-        state.drawingMode = true;
+        // Toggle eraser mode
+        state.drawingMode = !state.drawingMode;
         state.eraserMode = true;
-        updateActiveDrawingTool('eraser');
-        canvas.style.pointerEvents = 'auto';
+        
+        if (state.drawingMode) {
+            updateActiveDrawingTool('eraser');
+            canvas.style.pointerEvents = 'auto';
+            console.log('Eraser tool activated, drawing mode:', state.drawingMode);
+        } else {
+            updateActiveDrawingTool(null);
+            canvas.style.pointerEvents = 'none';
+            console.log('Eraser tool deactivated, drawing mode:', state.drawingMode);
+        }
+        
+        // Make sure the canvas is visible and positioned correctly
+        ensureCanvasIsReady();
     });
     
     clearDrawingBtn.addEventListener('click', () => {
@@ -48,16 +72,41 @@ function setupDrawingTools(canvas, state) {
     canvas.addEventListener('mouseout', stopDrawing);
     
     /**
+     * Ensure the canvas is ready for drawing
+     */
+    function ensureCanvasIsReady() {
+        // Make sure the canvas is visible
+        canvas.style.display = 'block';
+        
+        // Set pointer events based on drawing mode
+        canvas.style.pointerEvents = state.drawingMode ? 'auto' : 'none';
+        
+        // Set position and z-index
+        canvas.style.position = 'absolute';
+        canvas.style.zIndex = state.drawingMode ? '100' : '10';
+        
+        // Resize to make sure it covers the game board
+        resizeCanvas();
+    }
+    
+    /**
      * Resize the canvas to match the game board
      */
     function resizeCanvas() {
         const gameBoard = document.getElementById('game-board');
         const rect = gameBoard.getBoundingClientRect();
         
+        // Set canvas dimensions to match the game board
         canvas.width = rect.width;
         canvas.height = rect.height;
-        canvas.style.top = `${rect.top}px`;
-        canvas.style.left = `${rect.left}px`;
+        
+        // Since the canvas is now inside the game-board, we can use simpler positioning
+        canvas.style.position = 'absolute';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        
+        // Log canvas position for debugging
+        console.log('Canvas resized to:', rect.width, rect.height);
     }
     
     /**
@@ -68,7 +117,20 @@ function setupDrawingTools(canvas, state) {
         if (!state.drawingMode) return;
         
         isDrawing = true;
-        [lastX, lastY] = [e.offsetX, e.offsetY];
+        
+        // Get the correct coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        lastX = e.clientX - rect.left;
+        lastY = e.clientY - rect.top;
+        
+        // Log to help debug
+        console.log('Drawing started at:', lastX, lastY);
+        
+        // Draw a dot at the starting point
+        ctx.beginPath();
+        ctx.arc(lastX, lastY, state.eraserMode ? 10 : 1, 0, Math.PI * 2);
+        ctx.fillStyle = state.eraserMode ? 'white' : 'rgba(0, 0, 0, 0.7)';
+        ctx.fill();
     }
     
     /**
@@ -78,9 +140,17 @@ function setupDrawingTools(canvas, state) {
     function draw(e) {
         if (!isDrawing || !state.drawingMode) return;
         
+        // Get the correct coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Log to help debug
+        console.log('Drawing at:', x, y);
+        
         ctx.beginPath();
         ctx.moveTo(lastX, lastY);
-        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.lineTo(x, y);
         
         if (state.eraserMode) {
             ctx.strokeStyle = 'rgba(255, 255, 255, 1)';
@@ -93,20 +163,27 @@ function setupDrawingTools(canvas, state) {
         ctx.lineCap = 'round';
         ctx.stroke();
         
-        [lastX, lastY] = [e.offsetX, e.offsetY];
+        lastX = x;
+        lastY = y;
     }
     
     /**
      * Stop drawing on the canvas
      */
     function stopDrawing() {
+        if (isDrawing) {
+            console.log('Drawing stopped');
+        }
         isDrawing = false;
     }
+    
+    // Initialize the canvas
+    ensureCanvasIsReady();
 }
 
 /**
  * Update the active drawing tool indicator
- * @param {string} tool - The selected tool ('pen' or 'eraser')
+ * @param {string|null} tool - The selected tool ('pen', 'eraser', or null to deactivate)
  */
 function updateActiveDrawingTool(tool) {
     // Remove active class from all drawing tools
@@ -129,6 +206,7 @@ function updateActiveDrawingTool(tool) {
  */
 function clearCanvas(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    console.log('Canvas cleared');
 }
 
 /**
@@ -141,6 +219,7 @@ function exitDrawingMode(state) {
     document.querySelectorAll('.drawing-tool').forEach(tool => {
         tool.classList.remove('active');
     });
+    console.log('Drawing mode exited');
 }
 
 export { setupDrawingTools, exitDrawingMode }; 

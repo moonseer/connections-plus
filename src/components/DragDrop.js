@@ -26,8 +26,12 @@ function makeDraggable(element) {
     function dragMouseDown(e) {
         e.preventDefault();
         
+        // Get the app state
+        const appState = window.appState || {};
+        
         // Skip if in drawing mode
-        if (window.appState?.drawingMode) {
+        if (appState.drawingMode) {
+            console.log('Drag prevented: Drawing mode is active');
             return;
         }
         
@@ -44,6 +48,8 @@ function makeDraggable(element) {
         // Set up event listeners for drag and end
         document.onmouseup = closeDragElement;
         document.onmousemove = elementDrag;
+        
+        console.log('Started dragging card:', element.textContent);
     }
     
     /**
@@ -87,6 +93,8 @@ function makeDraggable(element) {
         // Stop moving when mouse button is released
         document.onmouseup = null;
         document.onmousemove = null;
+        
+        console.log('Stopped dragging card');
     }
 }
 
@@ -126,6 +134,8 @@ function resetCardPositions() {
         card.style.top = `${row * (cardHeight + spacing) + spacing}px`;
         card.style.zIndex = 1;
     });
+    
+    console.log('Reset all cards to grid positions');
 }
 
 export { setupDragging, resetCardPositions }; 

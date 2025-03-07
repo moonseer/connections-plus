@@ -40,13 +40,45 @@
 - [x] Simple Node.js server for serving the application
 - [x] Package.json for dependency management
 
-#### Step 4: Next Steps
-- [ ] Connect to a real GitHub repository for game data
-- [ ] Implement game browser for selecting historic games
+#### Step 4: Bug Fixes and Enhancements
+- [x] Fixed process.env reference in GameData.js for browser compatibility
+- [x] Added global state management via window.appState
+- [x] Updated components to properly access the global state
+- [x] Fixed port conflict issues in server.js with auto-port selection
+- [x] Fixed drawing functionality by properly positioning the canvas
+- [x] Added debugging logs to help troubleshoot drawing issues
+- [x] Moved canvas inside game-board for better positioning
+- [x] Improved drawing tool toggle functionality (click to activate/deactivate)
+- [x] Fixed card movement after toggling drawing mode
+- [x] Enhanced color coding to work with direct card clicks
+- [x] Added visual feedback for selected cards and active tools
+- [x] Fixed coordinate calculation for drawing on the canvas
+- [x] Fixed color selection to only apply to newly clicked cards
+- [x] Added count indicators to color tools to show group progress
+- [x] Added visual feedback when a color group is complete (4 cards)
+- [x] Improved state management when loading new games
+- [x] Added tooltips to color tools showing card counts
+- [x] Added ability to deselect colors by clicking on empty space
+- [x] Added pulsing animation to active color tool
+- [x] Added status message to show which color is currently selected
+- [x] Fixed status message positioning to appear to the right of color tools
+- [x] Improved toolbar layout to accommodate status messages
+
+#### Step 5: Next Steps
+- [x] Connect to a real GitHub repository for game data
+- [x] Implement game browser for selecting historic games
 - [ ] Add AI hints functionality
 - [ ] Improve the UI with animations and transitions
 - [ ] Add user accounts and progress tracking
 - [ ] Create mobile-responsive design improvements
+
+#### Step 6: Real Game Data Integration
+- [x] Connected to Eyefyre/NYT-Connections-Answers GitHub repository
+- [x] Implemented data fetching and formatting from the repository
+- [x] Created a game browser modal for selecting historic games
+- [x] Added search functionality to filter games by date or ID
+- [x] Implemented responsive design for the game browser
+- [x] Added loading states and error handling
 
 ### Implementation Details
 
@@ -55,6 +87,7 @@
 connections-plus/
 ├── index.html
 ├── server.js
+├── start-server.js
 ├── package.json
 ├── src/
 │   ├── main.js
@@ -63,6 +96,7 @@ connections-plus/
 │   │   ├── ColorCoding.js
 │   │   ├── DragDrop.js
 │   │   ├── DrawingTools.js
+│   │   ├── GameBrowser.js
 │   │   └── GameControls.js
 │   ├── data/
 │   │   └── GameData.js
@@ -74,10 +108,11 @@ connections-plus/
 
 #### Key Features
 1. **Flexible Card Placement**: Cards can be dragged and positioned anywhere on the game board.
-2. **Color Coding**: Cards can be assigned colors to represent categories.
-3. **Drawing Tools**: Users can draw on the canvas to make notes.
-4. **Game Submission**: Users can submit their guesses and get feedback.
-5. **Game Selection**: Users can choose from daily or random games.
+2. **Color Coding**: Cards can be assigned colors to represent categories, with visual indicators showing group progress.
+3. **Drawing Tools**: Users can draw on the canvas to make notes, with toggle functionality for drawing mode.
+4. **Game Submission**: Users can submit their guesses and get feedback on correct and incorrect groups.
+5. **Game Selection**: Users can choose from daily, random, or historic games from a searchable browser.
+6. **Real Game Data**: Connected to a GitHub repository with actual NYT Connections game data.
 
 #### Technical Implementation
 - Vanilla JavaScript with modules for organization
@@ -86,12 +121,19 @@ connections-plus/
 - Fetch API for loading game data
 - Event delegation for efficient event handling
 - Node.js server for serving the application
+- Global state management via window.appState
+- Visual feedback for user interactions
 
 #### How to Run
 1. Make sure Node.js is installed
 2. Run `npm install` to install dependencies
 3. Run `npm start` to start the server
-4. Open a browser and navigate to `http://localhost:3000`
+   - Or run `npm run start:auto` to automatically find an available port
+4. Open a browser and navigate to the URL shown in the console (typically `http://localhost:8080`)
+
+**Note on Port Conflicts**: If you encounter an `EADDRINUSE` error, it means the port is already in use. The server has been configured to use port 8080, but if that's also in use, you can:
+- Modify the PORT variable in server.js to use a different port
+- Use the `npm run start:auto` command which will automatically find an available port
 
 #### Development
 - Run `npm run dev` to start the server with nodemon for auto-reloading

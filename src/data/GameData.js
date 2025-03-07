@@ -1,6 +1,6 @@
 // Game Data Module
 
-// Sample game data for development
+// Sample game data for development (as fallback)
 const sampleGames = [
     {
         id: 'sample1',
@@ -69,33 +69,94 @@ const sampleGames = [
 ];
 
 // GitHub repository URL for game data
-const GITHUB_REPO_URL = 'https://raw.githubusercontent.com/username/connections-archive/main';
+const GITHUB_REPO_URL = 'https://raw.githubusercontent.com/Eyefyre/NYT-Connections-Answers/main/connections.json';
+
+// Check if we're in development mode
+// In browser environment, process.env might not be available
+const IS_DEVELOPMENT = false; // Set to false to use the real data
 
 /**
  * Load game data from the repository
- * @param {string} gameId - The ID of the game to load
+ * @param {string} gameId - The ID of the game to load, or 'daily' for today's game
  * @returns {Promise<Object>} - The game data
  */
 async function loadGame(gameId) {
-    // For development, use sample data
-    if (process.env.NODE_ENV === 'development' || !GITHUB_REPO_URL.includes('username')) {
-        return loadSampleGame(gameId);
-    }
-    
     try {
-        // In production, fetch from GitHub repository
-        const response = await fetch(`${GITHUB_REPO_URL}/games/${gameId}.json`);
+        // Fetch the full game list
+        const games = await fetchGamesFromGitHub();
         
-        if (!response.ok) {
-            throw new Error(`Failed to load game: ${response.status} ${response.statusText}`);
+        if (gameId === 'daily') {
+            // Get the most recent game
+            const latestGame = games[games.length - 1];
+            return formatGameData(latestGame);
+        } else {
+            // Find the game by ID
+            const game = games.find(g => g.id.toString() === gameId.toString());
+            if (game) {
+                return formatGameData(game);
+            }
         }
         
-        return await response.json();
+        throw new Error(`Game with ID ${gameId} not found`);
     } catch (error) {
         console.error('Error loading game:', error);
         
         // Fall back to sample data if available
         return loadSampleGame(gameId);
+    }
+}
+
+/**
+ * Format the game data from GitHub to match our application's format
+ * @param {Object} githubGame - The game data from GitHub
+ * @returns {Object} - The formatted game data
+ */
+function formatGameData(githubGame) {
+    // Map the GitHub data format to our application's format
+    const categories = githubGame.answers.map(answer => {
+        // Map level to color
+        const colorMap = {
+            0: 'yellow',
+            1: 'green',
+            2: 'blue',
+            3: 'purple'
+        };
+        
+        return {
+            name: answer.group,
+            color: colorMap[answer.level],
+            words: answer.members
+        };
+    });
+    
+    // Flatten all words into a single array and shuffle them
+    const words = categories.flatMap(category => category.words);
+    const shuffledWords = shuffleArray(words);
+    
+    return {
+        id: githubGame.id.toString(),
+        date: githubGame.date,
+        categories: categories,
+        words: shuffledWords
+    };
+}
+
+/**
+ * Fetch all games from the GitHub repository
+ * @returns {Promise<Array>} - Array of games
+ */
+async function fetchGamesFromGitHub() {
+    try {
+        const response = await fetch(GITHUB_REPO_URL);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch games: ${response.status} ${response.statusText}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching games from GitHub:', error);
+        throw error;
     }
 }
 
@@ -126,27 +187,15 @@ function loadSampleGame(gameId) {
  * @returns {Promise<Object>} - A random game
  */
 async function getRandomGame() {
-    // For development, use sample data
-    if (process.env.NODE_ENV === 'development' || !GITHUB_REPO_URL.includes('username')) {
-        const randomIndex = Math.floor(Math.random() * sampleGames.length);
-        return Promise.resolve(sampleGames[randomIndex]);
-    }
-    
     try {
-        // In production, fetch the list of available games
-        const response = await fetch(`${GITHUB_REPO_URL}/games/index.json`);
+        // Fetch all games from GitHub
+        const games = await fetchGamesFromGitHub();
         
-        if (!response.ok) {
-            throw new Error(`Failed to load game index: ${response.status} ${response.statusText}`);
-        }
+        // Select a random game
+        const randomIndex = Math.floor(Math.random() * games.length);
+        const randomGame = games[randomIndex];
         
-        const gameIndex = await response.json();
-        
-        // Select a random game from the index
-        const randomGame = gameIndex[Math.floor(Math.random() * gameIndex.length)];
-        
-        // Load the selected game
-        return await loadGame(randomGame.id);
+        return formatGameData(randomGame);
     } catch (error) {
         console.error('Error getting random game:', error);
         
@@ -161,23 +210,15 @@ async function getRandomGame() {
  * @returns {Promise<Array>} - The list of available games
  */
 async function getGameList() {
-    // For development, use sample data
-    if (process.env.NODE_ENV === 'development' || !GITHUB_REPO_URL.includes('username')) {
-        return Promise.resolve(sampleGames.map(game => ({
-            id: game.id,
-            date: game.date
-        })));
-    }
-    
     try {
-        // In production, fetch the list of available games
-        const response = await fetch(`${GITHUB_REPO_URL}/games/index.json`);
+        // Fetch all games from GitHub
+        const games = await fetchGamesFromGitHub();
         
-        if (!response.ok) {
-            throw new Error(`Failed to load game index: ${response.status} ${response.statusText}`);
-        }
-        
-        return await response.json();
+        // Format the game list
+        return games.map(game => ({
+            id: game.id.toString(),
+            date: game.date
+        }));
     } catch (error) {
         console.error('Error getting game list:', error);
         
